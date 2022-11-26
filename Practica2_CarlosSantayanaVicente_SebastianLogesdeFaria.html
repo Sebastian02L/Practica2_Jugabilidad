@@ -8,66 +8,85 @@
 <body>
     <p> Autores: Sebastián Loges y Carlos Santayana Vicente. 25/11/2022</p>
 
-    <canvas id="lienzo" width="800" height="800" style="border: 1px solid black; background-color: white;"> </canvas>
+    <canvas id="lienzo" width="600" height="600" style="border: 1px solid black; background-color: white;"> </canvas>
 
-    <script> 
-    var numeroCelulas = 40;
-    var pasos;
+    <script>
+        //VARIABLES GLOBALES
+        var numeroCelulas = 40;
+        var pasos;
 
-    //CANVAS 1
-    var canvas = document.getElementById("lienzo");
-    var contexto = canvas.getContext("2d");
+        //CANVAS 1
+        var canvas = document.getElementById("lienzo");
+        var contexto = canvas.getContext("2d");
 
-    //CLASE CELULAS
-    function celulas(){
+        //CLASE CELULA
+        function celula() {
             //ATRIBUTOS
             this.estado; //VIVA O MUERTA
             this.tiempo; //TIEMPO QUE LLEVA VIVA
         }
 
-    //CLASE MUNDO
-    function mundo(){
+        //CLASE MUNDO
+        function mundo() {
             //ATRIBUTOS
             this.longitud; //TAMAÑO DE LA CUADRÍCULA
             var lista = new Array(numeroCelulas);
-            for(var i = 0;i<numeroCelulas;++i){
+            for (var i = 0; i < numeroCelulas; ++i) {
                 lista[i] = new Array(numeroCelulas);
             }
 
 
         }
 
+        //MANEJADORES
         window.onload = function () {
             window.addEventListener("mousemove", eventosRaton, false);
-            
+
         }
 
-        function eventosRaton(e){
+        //MANEJADOR DE EVENTOS DE RATON
+        function eventosRaton(e) {
             var evento = e.type;
 
-            switch(evento){
+            switch (evento) {
                 case "mousemove":
-                    
+
                     break;
             }
         }
 
+        //DIBUJO DE LAS CELDAS
         function dibujaCuadrilla(contextoP) {
-            var pixeles = 800 / numeroCelulas;
-            var limite = pixeles;
+            var pixeles = 600 / numeroCelulas;
+            var limite = numeroCelulas - 1;
+            var distancia = pixeles;
 
-            for (var i = 0; i < limite; ++i){
-            contextoP.beginPath();
-            contextoP.moveTo(9 + pixeles, 69 + 0);
-            contextoP.lineTo(9 +pixeles, 69 + 799);
-            contextoP.moveTo(9 +pixeles, 69 + 0);
-            pixeles += pixeles;
-            
+            for (var i = 0; i < limite; ++i) {
+                contextoP.beginPath();
+                contextoP.moveTo(pixeles, 0);
+                contextoP.lineTo(pixeles, 800);
+                contextoP.moveTo(pixeles, 0);
+                contextoP.stroke();
+                pixeles += distancia;
             }
-            contextoP.stroke();
+
+            pixeles = 600 / numeroCelulas;
+
+            for (var i = 0; i < limite; ++i) {
+                contextoP.beginPath();
+                contextoP.moveTo(0, pixeles);
+                contextoP.lineTo(800, pixeles);
+                contextoP.moveTo(0, pixeles);
+                contextoP.stroke();
+                pixeles += distancia;
+            }
+
         }
 
+        //MAIN
         dibujaCuadrilla(contexto);
+
+
     </script>
 </body>
 
