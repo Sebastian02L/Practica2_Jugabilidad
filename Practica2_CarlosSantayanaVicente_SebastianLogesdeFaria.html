@@ -6,8 +6,69 @@
 </head>
 
 <body>
+    <p> Autores: Sebastián Loges y Carlos Santayana Vicente. 25/11/2022</p>
 
-    
+    <canvas id="lienzo" width="800" height="800" style="border: 1px solid black; background-color: white;"> </canvas>
+
+    <script> 
+    var numeroCelulas = 40;
+    var pasos;
+
+    //CANVAS 1
+    var canvas = document.getElementById("lienzo");
+    var contexto = canvas.getContext("2d");
+
+    //CLASE CELULAS
+    function celulas(){
+            //ATRIBUTOS
+            this.estado; //VIVA O MUERTA
+            this.tiempo; //TIEMPO QUE LLEVA VIVA
+        }
+
+    //CLASE MUNDO
+    function mundo(){
+            //ATRIBUTOS
+            this.longitud; //TAMAÑO DE LA CUADRÍCULA
+            var lista = new Array(numeroCelulas);
+            for(var i = 0;i<numeroCelulas;++i){
+                lista[i] = new Array(numeroCelulas);
+            }
+
+
+        }
+
+        window.onload = function () {
+            window.addEventListener("mousemove", eventosRaton, false);
+            
+        }
+
+        function eventosRaton(e){
+            var evento = e.type;
+
+            switch(evento){
+                case "mousemove":
+                    
+                    break;
+            }
+        }
+
+        function dibujaCuadrilla(contextoP) {
+            var pixeles = 800 / numeroCelulas;
+            var limite = pixeles;
+
+            for (var i = 0; i < limite; ++i){
+            contextoP.beginPath();
+            contextoP.moveTo(9 + pixeles, 69 + 0);
+            contextoP.lineTo(9 +pixeles, 69 + 799);
+            contextoP.moveTo(9 +pixeles, 69 + 0);
+            pixeles += pixeles;
+            
+            }
+            contextoP.stroke();
+        }
+
+        dibujaCuadrilla(contexto);
+    </script>
 </body>
 
 </html>
