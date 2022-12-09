@@ -8,14 +8,16 @@
 <body>
     <p> Autores: Sebastián Loges de Faría y Carlos Santayana Vicente. 25/11/2022</p>
 
+    <!-- CREACIÓN DEL CANVAS -->
     <canvas id="lienzo" width="600" height="600" style="border: 1px solid black; background-color: white;"> </canvas>
 
     <br><br>
-
+    <!-- CREACIÓN DE LOS PÁRRAFOS -->
     <p id="parrafoPoblacion">Población actual: 0</p>
     <p id = "parrafo1">Simulación detenida: Paso 0</p>
     <p id = "parrafo2"></p>
 
+    <!-- CREACIÓN DE LOS BOTONES -->
     <button id="botonI">INICIAR SIMULACIÓN</button>
     <button id="botonD">DETENER SIMULACIÓN</button>
     <br><br>
@@ -24,37 +26,41 @@
     <br><br>
     <button id="botonR">REINICIAR LA SIMULACIÓN</button>
 
+    <!-- SCRIPT DE LA PÁGINA, EL MAIN PARA MODIFICAR LAS CONSTANTES SE ENCUENTRA AL FINAL DE ESTE -->
     <script>
         window.onload = function(){
-            //BOTONES
+            //IDENTIFICADOR DE LOS BOTONES
             var botonI = document.getElementById("botonI");
             var botonD = document.getElementById("botonD");
             var botonVA = document.getElementById("botonVA");
             var botonVD = document.getElementById("botonVD");
             var botonR = document.getElementById("botonR");
 
-            //PARRAFOS
+            //IDENTIFICADOR DE LOS PARRAFOS
             var parrafoPoblacion = document.getElementById("parrafoPoblacion");
             var parrafo1 = document.getElementById("parrafo1");
             var parrafo2 = document.getElementById("parrafo2");
 
-            //CANVAS
+            //IDENTIFICADOR DEL CANVAS
             var canvas = document.getElementById("lienzo");
             var contexto = canvas.getContext("2d");
 
             //CLASE CELULA
             function celula() {
                 //Atributos de clase y su inicilización
-                this.estado = false; //Viva(true) o muerta(false)
-                this.tiempo = 0; //Tiempo que lleva viva o muerta, comienza en 0
+                this.estado = false;                        //Viva(true) o muerta(false)
+                this.tiempo = 0;                            //Tiempo que lleva viva o muerta, comienza en 0
 
-                //Métodos
+                //Métodos de la clase celula
+
+                //Indica que dicha celula está viva
                 this.encender = function(){
                     this.estado = true;
                     this.tiempo = 0;
                     numPoblacion++;
                 }
 
+                //Indica que dicha celula está muerta
                 this.apagar = function(){
                     this.estado = false;
                     this.tiempo = 0;
@@ -65,27 +71,32 @@
             //CLASE MUNDO
             function mundo(numeroCelulas = 40, numeroPasos = 10) {
                 //Atributos de clase y su inicialización
-                this.ancho = numeroCelulas; //Tamaño N de ancho y alto de la cuadrícula
-                this.pixeles = 600 / this.ancho; //Número de píxeles que corresponden a cada columna
-                this.pasos = numeroPasos; //Pasos que transcurren por segundo en el mundo
-                this.contadorPasos = 0;
-                this.matriz = new Array(numeroCelulas);
+                this.ancho = numeroCelulas;                 //Tamaño N de ancho y alto de la cuadrícula
+                this.pixeles = 600 / this.ancho;            //Número de píxeles que corresponden a cada columna
+                this.pasos = numeroPasos;                   //Pasos que transcurren por segundo en el mundo
+                this.contadorPasos = 0;                     //Contador de pasos que se mostrará en la interfaz
+                this.matriz = new Array(numeroCelulas);     //Array unidimensional
 
+                //Creación de un array bidimensional
                 for (var i = 0; i < this.ancho; ++i) {
                     this.matriz[i] = new Array(this.ancho);
                 }
 
+                //Creacion de las celulas y relleno del array
                 for(var i = 0; i < this.ancho; ++i){
                     for(var j = 0; j < this.ancho; ++j){
                         this.matriz[i][j] = new celula();
                     }
                 }
                 
-                //Métodos
-                this.dibujaCuadricula = function(){
-                    var numLineas = this.ancho - 1; //Número de líneas a dibujar en la cuadrícula
-                    var grosorActual = this.pixeles; //Grosor en cada iteración
+                //Métodos de la clase mundo
 
+                //Dibuja la cuadrícula del canvas que separa cada celula
+                this.dibujaCuadricula = function(){
+                    var numLineas = this.ancho - 1;       //Número de líneas a dibujar en la cuadrícula
+                    var grosorActual = this.pixeles;      //Grosor en cada iteración
+
+                    //Bucle encargado de dibujar todas las líneas verticales del canvas
                     for (var i = 0; i < numLineas; ++i) {
                         contexto.beginPath();
                         contexto.moveTo(grosorActual, 0);
@@ -97,6 +108,7 @@
 
                     grosorActual = this.pixeles;
 
+                    //Bucle encargado de dibujar todas las líneas horizontales del cavas
                     for (var i = 0; i < numLineas; ++i) {
                         contexto.beginPath();
                         contexto.moveTo(0, grosorActual);
@@ -107,13 +119,16 @@
                     }
                 }
 
+                //Calcula los índices de la celula seleccionada y devuelve un array con los mismos. Recibe las coordenadas del ratón respecto del canvas
                 this.encontrarCelda = function(coordXCanvas,coordYCanvas){
-                    var encontrado = false;
-                    var medidaX = this.pixeles;
-                    var medidaY = this.pixeles;
-                    var indiceC = 0;
-                    var indiceF = 0;
+                    var encontrado = false;                 //Boleano encargado de controlar los bucles de búsqueda
+                    var medidaX = this.pixeles;             //Variable que contiene el grosor de la celula en píxeles
+                    var medidaY = this.pixeles;             //Variable que contiene el grosor de la celula en píxeles
+                    var indiceC = 0;                        //Indice de la columna del array que contiene a la celula
+                    var indiceF = 0;                        //Indice de la fila del array que contiene a la celula
                     
+                    //Compara el valor de medidaX con las coordenadas del ratón dentro del canvas, si es menor, sumará el grosor de la celda y el índice aumentara
+                    //cuando sea mayor, encontrado se pone en true y sale del bucle.
                     while(!encontrado){
                         if(medidaX<coordXCanvas){
                             medidaX += this.pixeles;
@@ -124,7 +139,8 @@
                     }
 
                     var encontrado = false;
-
+                    //Compara el valor de medidaY con las coordenadas del ratón dentro del canvas, si es menor, sumará el grosor de la celda y el índice aumentara
+                    //cuando sea mayor, encontrado se pone en true y sale del bucle.
                     while(!encontrado){
                         if(medidaY<coordYCanvas){
                             medidaY += this.pixeles;
@@ -139,23 +155,27 @@
                     return arrayIndices;
                 }
 
+                //Pinta la celda correspondiente en función de los índices que se le pasen al mismo
                 this.pintarCelda = function(indiceF,indiceC){
+                    //Si la celda está muerta, pasará a estar viva y se mostrará en el canvas
                     if(this.matriz[indiceF][indiceC].estado == false){
                         this.matriz[indiceF][indiceC].encender();
                         contexto.fillRect(this.pixeles*indiceC+1, this.pixeles*indiceF+1, this.pixeles-2, this.pixeles-2);
-                    }else{
+                    }else{ //Si la celda está viva, pasará a estar muerta y se quitará del canvas
                         this.matriz[indiceF][indiceC].apagar();
                         contexto.clearRect(this.pixeles*indiceC+1, this.pixeles*indiceF+1, this.pixeles-2, this.pixeles-2);
                     }
                 }
 
+                //Comprueba qué celulas deberán morir y nacer en cada paso
                 this.comprobarCelulas = function(){
-                    matrizAux = new Array(miMundo.ancho);
+                    matrizAux = new Array(miMundo.ancho);               //Array auxiliar que guardará el estado actual de las celulas
 
                     for (var i = 0; i < miMundo.ancho; ++i) {
                         matrizAux[i] = new Array(miMundo.ancho);
                     }
 
+                    //Se guardan las celulas en el array auxiliar 
                     for(var p = 0; p < miMundo.pasos; ++p){
                         for(var i = 0; i < miMundo.ancho; ++i){
                             for(var j = 0; j < miMundo.ancho; ++j){
@@ -166,12 +186,14 @@
                                 }
                             }
                         }
-
+                        //Comprobación de las celulas en funcion de su estado en el array bidimensional
                         for(var i = 0; i < miMundo.ancho; ++i){
                             for(var j = 0; j < miMundo.ancho; ++j){
-                                var contador = 0;
+                                var contador = 0;                   //Contador axiliar para determinar el nuevo estado de las celulas
 
-                                if(i==0&&j==0){ //ESQUINA SUPERIOR IZQUIERDA
+                                //Casos especiales 
+
+                                if(i == 0 && j == 0){ //ESQUINA SUPERIOR IZQUIERDA
                                     if(matrizAux[miMundo.ancho-1][j] == true){
                                         contador++;
                                     }
@@ -196,7 +218,7 @@
                                     if(matrizAux[miMundo.ancho-1][j+1] == true){
                                         contador++;
                                     }
-                                }else if(i==0&&j!=0&&j!=miMundo.ancho-1){ //FILA SUPERIOR
+                                }else if(i == 0 && j != 0 && j !=miMundo.ancho - 1){ //FILA SUPERIOR
                                     if(matrizAux[miMundo.ancho-1][j] == true){
                                         contador++;
                                     }
@@ -221,7 +243,7 @@
                                     if(matrizAux[miMundo.ancho-1][j+1] == true){
                                         contador++;
                                     }
-                                }else if(i==0&&j==miMundo.ancho-1){ //ESQUINA SUPERIOR DERECHA
+                                }else if(i == 0 && j == miMundo.ancho - 1){ //ESQUINA SUPERIOR DERECHA
                                     if(matrizAux[miMundo.ancho-1][j] == true){
                                         contador++;
                                     }
@@ -246,7 +268,7 @@
                                     if(matrizAux[miMundo.ancho-1][0] == true){
                                         contador++;
                                     }
-                                }else if(i!=0&&i!=miMundo.ancho-1&&j==0){ //COLUMNA IZQUIERDA
+                                }else if(i != 0 && i != miMundo.ancho - 1 && j == 0){ //COLUMNA IZQUIERDA
                                     if(matrizAux[i-1][j] == true){
                                         contador++;
                                     }
@@ -271,7 +293,7 @@
                                     if(matrizAux[i-1][j+1] == true){
                                         contador++;
                                     }
-                                }else if(i==miMundo.ancho-1&&j==0){ //ESQUINA INFERIOR IZQUIERDA
+                                }else if(i == miMundo.ancho - 1 && j == 0){ //ESQUINA INFERIOR IZQUIERDA
                                     if(matrizAux[i-1][j] == true){
                                         contador++;
                                     }
@@ -296,7 +318,7 @@
                                     if(matrizAux[i-1][j+1] == true){
                                         contador++;
                                     }
-                                }else if(i==miMundo.ancho-1&&j!=0&&j!=miMundo.ancho-1){ //FILA INFERIOR
+                                }else if(i == miMundo.ancho - 1 && j != 0 && j != miMundo.ancho - 1){ //FILA INFERIOR
                                     if(matrizAux[i-1][j] == true){
                                         contador++;
                                     }
@@ -321,7 +343,7 @@
                                     if(matrizAux[i-1][j+1] == true){
                                         contador++;
                                     }
-                                }else if(i==miMundo.ancho-1&&j==miMundo.ancho-1){ //ESQUINA INFERIOR DERECHA
+                                }else if(i == miMundo.ancho - 1 && j == miMundo.ancho - 1){ //ESQUINA INFERIOR DERECHA
                                     if(matrizAux[i-1][j] == true){
                                         contador++;
                                     }
@@ -346,7 +368,7 @@
                                     if(matrizAux[i-1][0] == true){
                                         contador++;
                                     }
-                                }else if(i!=0&&i!=miMundo.ancho-1&&j==miMundo.ancho-1){ //COLUMNA DERECHA
+                                }else if(i != 0 && i != miMundo.ancho - 1 && j == miMundo.ancho - 1){ //COLUMNA DERECHA
                                     if(matrizAux[i-1][j] == true){
                                         contador++;
                                     }
@@ -398,6 +420,7 @@
                                     }
                                 }
 
+                                //Si hay menos de 2 o más de 3 vecinos vivos, la celula muere, en el caso contrario, la celula vive
                                 if(miMundo.matriz[i][j].estado == true){
                                     if(contador<2||contador>3){
                                         miMundo.matriz[i][j].apagar();
@@ -412,6 +435,7 @@
                             }
                         }
 
+                        //Aumenta el tiempo que llevan vivas o muertas las celulas
                         for(var i = 0; i < miMundo.ancho; ++i){
                             for(var j = 0; j < miMundo.ancho; ++j){
                                 miMundo.matriz[i][j].tiempo++;
@@ -420,6 +444,7 @@
 
                         miMundo.contadorPasos++;
                     }
+                    //Actualización de los párrafos 
                     parrafo1.innerHTML = "Simulación en marcha: Paso " + miMundo.contadorPasos;
                     parrafoPoblacion.innerHTML = "Población actual: " + numPoblacion;
                 }
@@ -438,48 +463,50 @@
             function eventosRaton(e) {
                 switch(e.type){
                     case "click":
-                        if(e.target.id == "botonI"){
-                            if(temporizador==undefined){
+                        if(e.target.id == "botonI"){ //Boton de Inicio de simulación
+                            if(temporizador == undefined){
                                 enMarcha = true;
                                 temporizador = setInterval(miMundo.comprobarCelulas, UNIDAD_DE_TIEMPO_MS);
                             }
                         }
-                        if(e.target.id == "botonD"){
+                        if(e.target.id == "botonD"){//Boton de Pausa de simulación
                             enMarcha = false;
                             clearInterval(temporizador);
                             temporizador = undefined;
                             parrafo1.innerHTML = "Simulación detenida: Paso " + miMundo.contadorPasos;
                         }
-                        if(e.target.id == "botonVA"){
+                        if(e.target.id == "botonVA"){ //Boton de aumentar la velocidad de la simulación
                             if(enMarcha && UNIDAD_DE_TIEMPO_MS>=100){
                                 UNIDAD_DE_TIEMPO_MS -= 100;
                                 clearInterval(temporizador);
                                 temporizador = setInterval(miMundo.comprobarCelulas, UNIDAD_DE_TIEMPO_MS);
                             }
                         }
-                        if(e.target.id == "botonVD"){
+                        if(e.target.id == "botonVD"){ //Boton de disminuir la velocidad de la simulación
                             if(enMarcha){
                                 UNIDAD_DE_TIEMPO_MS += 100;
                                 clearInterval(temporizador);
                                 temporizador = setInterval(miMundo.comprobarCelulas, UNIDAD_DE_TIEMPO_MS);
                             }
                         }
-                        if(e.target.id == "botonR"){
+                        if(e.target.id == "botonR"){ //Boton de reinicio de la simulación
                             UNIDAD_DE_TIEMPO_MS = 1000;
                             enMarcha = false;
                             numPoblacion = 0;
                             clearInterval(temporizador);
                             temporizador = undefined;
-                            if(CELULAS!=undefined&&PASOS!=undefined){
+                            if(CELULAS != undefined && PASOS != undefined){
                                 miMundo = new mundo(CELULAS,PASOS);
                             }else{
                                 miMundo = new mundo();
                             }
-                            contexto.clearRect(0,0,600,600);
+                            contexto.clearRect(0, 0, 600, 600);
                             miMundo.dibujaCuadricula();
                             parrafoPoblacion.innerHTML = "Población actual: " + numPoblacion;
                             parrafo1.innerHTML = "Simulación detenida: Paso " + miMundo.contadorPasos;
                         }
+
+                        //Si se hace click sobre una celula del lienzo
                         if(e.target.id == "lienzo"){
                             const canvasBorder = this.getBoundingClientRect();
                             var celda = miMundo.encontrarCelda(e.pageX - canvasBorder.left, e.pageY - canvasBorder.top);
@@ -487,7 +514,8 @@
                             parrafoPoblacion.innerHTML = "Población actual: " + numPoblacion;
                         }
                         break;
-                    case "mousemove":
+
+                    case "mousemove": //Si se pone el ratón sobre una celula, muestra la información de la misma
                         const canvasBorder = this.getBoundingClientRect();
                         var celda = miMundo.encontrarCelda(e.pageX - canvasBorder.left, e.pageY - canvasBorder.top);
                         if(miMundo.matriz[celda[0]][celda[1]].estado == true){
